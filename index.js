@@ -1,5 +1,5 @@
 const tls = require('tls')
-const host = require('os').hostname
+const ddhost = require('os').hostname
 
 const createConnection = () => {
   let conn = tls.connect({
@@ -28,7 +28,7 @@ const winstonDatadogTcp = (apiKey, tags) => {
         data,
         ddtags,
         ddsource: '@cardash/winston-datadog-tcp',
-        host,
+        ddhost,
         service: tags.app || undefined,
       }
       if (dd.conn.destroyed) dd.conn = createConnection().conn
