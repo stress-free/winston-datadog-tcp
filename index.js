@@ -6,6 +6,7 @@ const winstonDatadogTcp = (apiKey, tags) => {
     host: 'intake.logs.datadoghq.com',
     port: 10516,
   })
+  conn.setKeepAlive(true)
   const ddtags = Object.keys(tags).map(t => `${t}:${tags[t]}`).join(',')
   return {
     conn,
