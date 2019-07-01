@@ -1,0 +1,26 @@
+{
+  "name": "@cardash/winston-datadog-tcp",
+  "version": "1.0.0",
+  "description": "A Winston-compatible (2.x) Datadog logger via TCP+SSL. No local file taking up space, no log rotation management.",
+  "main": "index.js",
+  "scripts": {
+    "test": "nodeunit test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/cardash/winston-datadog-tcp.git"
+  },
+  "keywords": [
+    "winston",
+    "datadog",
+    "tcp",
+    "ssl",
+    "logging"
+  ],
+  "author": "David Ellis <david@cardash.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cardash/winston-datadog-tcp/issues"
+  },
+  "homepage": "https://github.com/cardash/winston-datadog-tcp#readme"
+}
