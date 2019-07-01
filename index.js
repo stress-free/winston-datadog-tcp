@@ -6,6 +6,7 @@ const winstonDatadogTcp = (apiKey, tags) => {
     host: 'intake.logs.datadoghq.com',
     port: 10516,
   })
+  const ddtags = Object.keys(tags).map(t => `${t}:${tags[t]}`).join(',')
   return {
     conn,
     log: (loglevel, text, data, callback) => {
@@ -13,10 +14,10 @@ const winstonDatadogTcp = (apiKey, tags) => {
         status: loglevel,
         message: `${text} ${JSON.stringify(data)}`,
         data,
-        ddtags: Object.keys(tags).map(t => `${t}:${tags[t]}`).join(','),
+        ddtags,
         ddsource: '@cardash/winston-datadog-tcp',
         hostname,
-        service: tags[app] || undefined,
+        service: tags.app || undefined,
       }
       conn.write(`${apiKey} ${JSON.stringify(record)}`, callback)
     }
