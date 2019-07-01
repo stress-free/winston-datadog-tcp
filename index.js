@@ -3,7 +3,6 @@ const host = require('os').hostname
 
 const createPersistentConnection = () => {
   let conn = tls.connect({
-    host
     host: 'intake.logs.datadoghq.com',
     port: 10516,
   })
