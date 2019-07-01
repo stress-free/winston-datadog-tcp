@@ -19,7 +19,7 @@ const winstonDatadogTcp = (apiKey, tags) => {
         hostname,
         service: tags.app || undefined,
       }
-      conn.write(`${apiKey} ${JSON.stringify(record)}`, callback)
+      conn.write(`${apiKey} ${JSON.stringify(record)}\n`, callback)
     }
   }
 }
