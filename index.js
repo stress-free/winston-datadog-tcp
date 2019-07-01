@@ -1,24 +1,23 @@
 const tls = require('tls')
 const host = require('os').hostname
 
-const createPersistentConnection = () => {
+const createConnection = () => {
   let conn = tls.connect({
     host: 'intake.logs.datadoghq.com',
     port: 10516,
   })
+  conn.setEncoding('utf8')
   conn.setKeepAlive(true)
+  conn.unref()
   const result = {
     conn,
   }
-  conn.on('end', () => {
-    result.conn = createPersistentConnection().conn
-  })
 
   return result
 }
 
 const winstonDatadogTcp = (apiKey, tags) => {
-  const dd = createPersistentConnection()
+  const dd = createConnection()
   const ddtags = Object.keys(tags).map(t => `${t}:${tags[t]}`).join(',')
   return {
     dd,
@@ -32,6 +31,7 @@ const winstonDatadogTcp = (apiKey, tags) => {
         host,
         service: tags.app || undefined,
       }
+      if (dd.conn.destroyed) dd.conn = createConnection()
       dd.conn.write(`${apiKey} ${JSON.stringify(record)}\n`, callback)
     }
   }
