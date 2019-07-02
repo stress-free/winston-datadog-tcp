@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint .",
-    "test": "yarn run lint && nodeunit test"
+    "test": "yarn run lint && nyc nodeunit test"
   },
   "repository": {
     "type": "git",
@@ -26,6 +26,7 @@
   "homepage": "https://github.com/cardash/winston-datadog-tcp#readme",
   "devDependencies": {
     "eslint": "^6.0.1",
-    "nodeunit": "^0.11.3"
+    "nodeunit": "^0.11.3",
+    "nyc": "^14.1.1"
   }
 }
