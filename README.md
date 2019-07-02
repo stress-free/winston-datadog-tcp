@@ -1,4 +1,4 @@
-# @cardash/winston-datadog-tcp
+# @cardash/winston-datadog-tcp [![CircleCI](https://circleci.com/gh/cardash/winston-datadog-tcp/tree/master.svg?style=svg)](https://circleci.com/gh/cardash/winston-datadog-tcp/tree/master) [![Coverage Status](https://coveralls.io/repos/github/cardash/winston-datadog-tcp/badge.svg?branch=master)](https://coveralls.io/github/cardash/winston-datadog-tcp?branch=master)  [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 A Winston-compatible (2.x) Datadog logger via TCP+SSL. No local file taking up space, no log rotation management.
 
