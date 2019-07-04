@@ -45,17 +45,28 @@ exports.testNoService = (test) => {
   logObj.log('info', 'Hello', ['world'], () => test.done())
 }
 
-// This test will fire a rejected message at Datadog. TODO: Make `createConnection` replaceable
 exports.testRestoreConn = (test) => {
-  test.expect(1)
+  test.expect(2)
   const fakeConn = {
-    destroyed: true
+    destroyed: true,
+    write: (str, callback) => {
+      test.equals(str, `FAKE_KEY ${JSON.stringify({
+        status: 'info',
+        message: `Hello ${JSON.stringify(['world'])}`,
+        data: ['world'],
+        ddtags: 'env:test',
+        ddsource: '@cardash/winston-datadog-tcp',
+        hostname,
+      })}\n`)
+      callback()
+    }
   }
+  const fakeCreateConnection = () => fakeConn
   const logObj = winstonDatadogTcp('FAKE_KEY', { env: 'test', })
   logObj.dd.conn = fakeConn
-  setTimeout(() => {}, 300) // Since the conn is unref'd, add some lag to let it execute
+  logObj.dd.createConnection = fakeCreateConnection
   logObj.log('info', 'Hello', ['world'], () => {
-    test.equals(true, logObj.dd.conn instanceof require('tls').TLSSocket)
+    test.equals(fakeConn, logObj.dd.conn)
     test.done()
   })
 }

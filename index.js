@@ -15,6 +15,7 @@ const createConnection = () => {
 
 const winstonDatadogTcp = (apiKey, tags) => {
   const dd = {
+    createConnection,
     conn: createConnection(),
   }
   const ddtags = Object.keys(tags).map(t => `${t}:${tags[t]}`).join(',')
@@ -30,7 +31,7 @@ const winstonDatadogTcp = (apiKey, tags) => {
         hostname,
         service: tags.app || undefined,
       }
-      if (dd.conn.destroyed) dd.conn = createConnection()
+      if (dd.conn.destroyed) dd.conn = dd.createConnection()
       dd.conn.write(`${apiKey} ${JSON.stringify(record)}\n`, callback)
     }
   }
