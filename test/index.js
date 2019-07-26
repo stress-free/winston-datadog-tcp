@@ -70,3 +70,52 @@ exports.testRestoreConn = (test) => {
     test.done()
   })
 }
+
+exports.testWriteError = (test) => {
+  test.expect(2)
+  let writes = 0
+  const fakeCreateConnection = () => {
+    const fakeConn = {
+      destroyed: writes === 1,
+      write: (str, callback) => {
+        writes++
+        if (writes === 1) {
+          fakeConn.destroyed = true
+          return undefined
+        }
+        if (writes === 2) {
+          test.equals(str, `FAKE_KEY ${JSON.stringify({
+            status: 'info',
+            message: `Hello ${JSON.stringify(['world'])}`,
+            data: ['world'],
+            ddtags: 'env:test',
+            ddsource: '@cardash/winston-datadog-tcp',
+            hostname,
+          })}\n`)
+        }
+        if (writes === 3) {
+          test.equals(str, `FAKE_KEY ${JSON.stringify({
+            status: 'info',
+            message: `Foo ${JSON.stringify(['bar'])}`,
+            data: ['bar'],
+            ddtags: 'env:test',
+            ddsource: '@cardash/winston-datadog-tcp',
+            hostname,
+          })}\n`)
+        }
+        callback()
+      }
+    }
+    return fakeConn
+  }
+  const logObj = winstonDatadogTcp('FAKE_KEY', { env: 'test', })
+  logObj.dd.conn = fakeCreateConnection()
+  logObj.dd.createConnection = fakeCreateConnection
+  logObj.log('info', 'Hello', ['world'], () => {
+    test.ok(false, 'This path should not be called')
+    test.done()
+  })
+  logObj.log('info', 'Foo', ['bar'], () => {
+    test.done()
+  })
+}
