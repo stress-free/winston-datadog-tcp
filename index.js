@@ -9,6 +9,7 @@ const createConnection = () => {
   conn.setEncoding('utf8')
   conn.setKeepAlive(true)
   conn.unref()
+  conn.on('error', () => { conn.destroyed = true })
 
   return conn
 }
@@ -17,6 +18,7 @@ const winstonDatadogTcp = (apiKey, tags) => {
   const dd = {
     createConnection,
     conn: createConnection(),
+    queuedMessage: undefined,
   }
   const ddtags = Object.keys(tags).map(t => `${t}:${tags[t]}`).join(',')
   return {
@@ -31,8 +33,21 @@ const winstonDatadogTcp = (apiKey, tags) => {
         hostname,
         service: tags.app || undefined,
       }
-      if (dd.conn.destroyed) dd.conn = dd.createConnection()
-      dd.conn.write(`${apiKey} ${JSON.stringify(record)}\n`, callback)
+      if (dd.conn.destroyed) {
+        dd.conn = dd.createConnection()
+        if (dd.queuedMessage) return dd.conn.write(dd.queuedMessage, () => {
+          dd.queuedMessage = `${apiKey} ${JSON.stringify(record)}\n`
+          dd.conn.write(dd.queuedMessage, () => {
+            dd.queuedMessage = undefined
+            callback()
+          })
+        })
+      }
+      dd.queuedMessage = `${apiKey} ${JSON.stringify(record)}\n`
+      dd.conn.write(dd.queuedMessage, () => {
+        dd.queuedMessage = undefined
+        callback()
+      })
     }
   }
 }
