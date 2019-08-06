@@ -19,7 +19,7 @@ const config = require('@cardash/config')
 const WinstonDatadogTcp = require('@cardash/winston-datadog-tcp')
 const winston = require('winston')
 
-const logger = new winston.createLogger({
+const logger = winston.createLogger({
   level: config.logLevel,
   transports: [
     new winston.transports.Console(),
