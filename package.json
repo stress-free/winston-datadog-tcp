@@ -1,6 +1,6 @@
 {
   "name": "@cardash/winston-datadog-tcp",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A Winston-compatible (2.x) Datadog logger via TCP+SSL. No local file taking up space, no log rotation management.",
   "main": "index.js",
   "scripts": {
