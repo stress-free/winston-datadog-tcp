@@ -119,3 +119,31 @@ exports.testWriteError = (test) => {
     test.done()
   })
 }
+
+exports.testCircularLogging = (test) => {
+  test.expect(1)
+  const fakeConn = {
+    write: (str, cb) => {
+      test.equals(str, `FAKE_KEY ${JSON.stringify({
+        status: 'info',
+        message: 'Hello {"a":1,"o":"[Circular]"}',
+        data: {
+          a: 1,
+          o: '[Circular]'
+        },
+        ddtags: 'env:test',
+        ddsource: '@cardash/winston-datadog-tcp',
+        hostname,
+      })}\n`)
+      cb()
+    },
+  }
+
+  const logObj = winstonDatadogTcp('FAKE_KEY', { env: 'test', })
+  logObj.dd.conn = fakeConn
+  const data = {
+    a: 1,
+  }
+  data.o = data
+  logObj.log('info', 'Hello', data, () => test.done())
+}
