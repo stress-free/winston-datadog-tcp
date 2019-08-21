@@ -1,5 +1,6 @@
 const tls = require('tls')
 const hostname = require('os').hostname()
+const safeStringify = require('fast-safe-stringify')
 
 const createConnection = () => {
   const conn = tls.connect({
@@ -26,7 +27,7 @@ const winstonDatadogTcp = (apiKey, tags) => {
     log: (loglevel, text, data, callback) => {
       const record = {
         status: loglevel,
-        message: `${text} ${JSON.stringify(data)}`,
+        message: `${text} ${safeStringify(data)}`,
         data,
         ddtags,
         ddsource: '@cardash/winston-datadog-tcp',
@@ -36,14 +37,14 @@ const winstonDatadogTcp = (apiKey, tags) => {
       if (dd.conn.destroyed) {
         dd.conn = dd.createConnection()
         if (dd.queuedMessage) return dd.conn.write(dd.queuedMessage, () => {
-          dd.queuedMessage = `${apiKey} ${JSON.stringify(record)}\n`
+          dd.queuedMessage = `${apiKey} ${safeStringify(record)}\n`
           dd.conn.write(dd.queuedMessage, () => {
             dd.queuedMessage = undefined
             callback()
           })
         })
       }
-      dd.queuedMessage = `${apiKey} ${JSON.stringify(record)}\n`
+      dd.queuedMessage = `${apiKey} ${safeStringify(record)}\n`
       dd.conn.write(dd.queuedMessage, () => {
         dd.queuedMessage = undefined
         callback()
